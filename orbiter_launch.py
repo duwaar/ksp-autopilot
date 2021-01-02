@@ -33,14 +33,14 @@ def main():
         print("Throttle:", vessel.control.throttle)
         vessel.auto_pilot.engage()
         print("Autopilot engaged")
-        vessel.auto_pilot.target_pitch_and_heading(90, 90)
+        vessel.auto_pilot.target_pitch_and_heading(90, 1)
 
         input("Ready to launch. Hit enter to start flight.")
 
-        print("Launch")
+        print("LAUNCH")
         vessel.control.activate_next_stage()
 
-        print("Ascent")
+        print("ASCENT")
         turn_angle = 90
         new_turn_angle = turn_angle
         turn_start_altitude = 5e3
@@ -75,10 +75,32 @@ def main():
                 vessel.control.throttle = 0
                 sleep(1)
                 vessel.control.activate_next_stage()
-                vessel.auto_pilot.disengage()
-                vessel.auto_pilot.sas = True
                 print("Turn complete")
                 break
+        
+        sleep(20)
+        print("ORBIT BURN")
+        time_to_apoapsis = conn.add_stream(getattr, vessel.orbit, "time_to_apoapsis")
+        print("Time to apoapsis:", time_to_apoapsis())
+        periapsis_altitude = conn.add_stream(getattr, vessel.orbit, "periapsis_altitude")
+        print("Periapsis altitude:", periapsis_altitude())
+        burn_started = False
+        print("Burn started:", burn_started)
+
+        while True:
+            if time_to_apoapsis() < 30 and not burn_started:
+                vessel.auto_pilot.target_pitch_and_heading(0, 90)
+                vessel.control.throttle = 1
+                burn_started = True
+                print("Burn started:", burn_started)
+
+            if periapsis_altitude() > 50e3:
+                vessel.control.throttle = 0
+                print("Burn completed")
+                break
+
+        print("Program completed. Welcome to orbit!")
+
 
 
 if __name__ == "__main__":
