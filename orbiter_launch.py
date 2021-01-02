@@ -78,7 +78,6 @@ def main():
                 print("Turn complete")
                 break
         
-        sleep(20)
         print("ORBIT BURN")
         time_to_apoapsis = conn.add_stream(getattr, vessel.orbit, "time_to_apoapsis")
         print("Time to apoapsis:", time_to_apoapsis())
@@ -88,13 +87,13 @@ def main():
         print("Burn started:", burn_started)
 
         while True:
-            if time_to_apoapsis() < 30 and not burn_started:
+            if time_to_apoapsis() < 40 and not burn_started:
                 vessel.auto_pilot.target_pitch_and_heading(0, 90)
                 vessel.control.throttle = 1
                 burn_started = True
                 print("Burn started:", burn_started)
 
-            if periapsis_altitude() > 50e3:
+            if periapsis_altitude() > 80e3:
                 vessel.control.throttle = 0
                 print("Burn completed")
                 break
