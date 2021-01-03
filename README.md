@@ -1,12 +1,15 @@
-### Kerbal Space Program Autopilot
+# Kerbal Space Program Autopilot
 
 ## Setting up the environment
 - Install kRPC: https://krpc.github.io/krpc/getting-started.html
+  - Download the package
+  - Unzip the files
+  - Move the files into the GameData folder in your local KSP installation.
 - Clone this repo
 - Set up a Python virtual environment
   - Must be Python 3.x
   - Install krpc with pip
-- Copy the .craft files from this repo to the VAB folder in your KSP installation.
+- Copy the .craft files from this repo to the VAB folder in your local KSP installation.
 
 ## Running the autopilot
 - Start KSP and load a game
