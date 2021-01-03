@@ -40,7 +40,6 @@ def main():
         print("LAUNCH")
         vessel.control.activate_next_stage()
 
-        print("ASCENT")
         turn_angle = 90
         new_turn_angle = turn_angle
         turn_start_altitude = 5e3
