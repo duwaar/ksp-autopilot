@@ -17,12 +17,12 @@ def main():
         surface_altitude = conn.add_stream(getattr, vessel.flight(surface_frame), "surface_altitude")
         print("Surface altitude:", surface_altitude())
         speed = conn.add_stream(getattr, vessel.flight(surface_frame), "speed")
-        print("Speed:", vessel_speed())
+        print("Speed:", speed())
         vertical_speed = conn.add_stream(getattr, vessel.flight(surface_frame), "vertical_speed")
         print("Vertical speed:", vertical_speed())
         recoverable = conn.add_stream(getattr, vessel, "recoverable")
 
-        input("Ready to start reentry procedure.")
+        input("Ready for reentry. Hit enter to start.")
 
         while True:
             if recoverable():
