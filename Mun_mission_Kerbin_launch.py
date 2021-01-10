@@ -8,7 +8,7 @@ def main():
         print("Connection established.")
         vessel = conn.space_center.active_vessel
         surface_frame = vessel.orbit.body.reference_frame
-        orbital_frame = vessel.orbit.body.non_rotating_reference_frame
+        #orbital_frame = vessel.orbit.body.non_rotating_reference_frame
 
         mean_altitude = conn.add_stream(getattr, vessel.flight(surface_frame), "mean_altitude")
         print("Mean altitude:", mean_altitude())
@@ -17,9 +17,9 @@ def main():
         apoapsis_altitude = conn.add_stream(getattr, vessel.orbit, "apoapsis_altitude")
         print("Apoapsis altitude:", apoapsis_altitude())
         
-        side_booster_fuel = conn.add_stream(vessel.resources_in_decouple_stage(5, cumulative=False).amount, "SolidFuel")
+        side_booster_fuel = conn.add_stream(vessel.resources_in_decouple_stage(5).amount, "SolidFuel")
         print("Side booster fuel:", side_booster_fuel())
-        central_booster_fuel = conn.add_stream(vessel.resources_in_decouple_stage(4, cumulative=False).amount, "LiquidFuel")
+        central_booster_fuel = conn.add_stream(vessel.resources_in_decouple_stage(5).amount, "LiquidFuel")
         print("Central booster fuel:", central_booster_fuel())
 
         side_boosters_decoupled = False
@@ -48,7 +48,9 @@ def main():
         target_apoapsis_altitude = 90e3
 
         while True:
-            if side_booster_fuel() < 0.1 and not side_boosters_decoupled:
+            # The SRBs on the launcher stage each have a tiny separation booster with 8.0 SolidFuel.
+            # If you don't account for this, the stage will never be empty of SolidFuel.
+            if side_booster_fuel() < (0.1 + 8.0) * 3 and not side_boosters_decoupled:
                 vessel.control.activate_next_stage()
                 side_boosters_decoupled = True
                 vessel.control.throttle = 1
