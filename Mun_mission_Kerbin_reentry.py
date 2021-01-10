@@ -1,4 +1,5 @@
 import krpc
+from time import sleep
 
 
 def main():
@@ -20,25 +21,34 @@ def main():
         print("Speed:", speed())
         vertical_speed = conn.add_stream(getattr, vessel.flight(surface_frame), "vertical_speed")
         print("Vertical speed:", vertical_speed())
+        drogue_chutes_deployed = False
+        print("Drogue chutes deployed:", drogue_chutes_deployed)
+        regular_chutes_deployed = False
+        print("Regular chutes deployed:", regular_chutes_deployed)
         recoverable = conn.add_stream(getattr, vessel, "recoverable")
+        print("Recoverable:", recoverable())
 
         input("Ready for reentry. Hit enter to start.")
 
         while True:
             if recoverable():
-                vessel.recover()
-                print("Vessel recovered. Yay!")
+                sleep(1)
+                if recoverable():
+                    vessel.recover()
+                    print("Vessel recovered. Yay!")
             
-            if speed() < 400.0:
+            if speed() < 400.0 and not drogue_chutes_deployed:
                 drogue_chutes = vessel.parts.with_title("Mk12-R Radial-Mount Drogue Chute")
-                for parachute in drogue_chutes:
-                    parachute.deploy()
+                for part in drogue_chutes:
+                    part.parachute.deploy()
+                drogue_chutes_deployed = True
                 print("Drogue chutes deployed:", drogue_chutes)
             
-            if surface_altitude() < 300.0:
+            if surface_altitude() < 300.0 and not regular_chutes_deployed:
                 regular_chutes = vessel.parts.with_title("Mk2-R Radial-Mount Parachute")
-                for parachute in regular_chutes:
-                    parachute.deploy()
+                for part in regular_chutes:
+                    part.parachute.deploy()
+                regular_chutes_deployed = True
                 print("Regular chutes deployed:", regular_chutes)
 
 
